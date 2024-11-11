@@ -152,11 +152,11 @@
             <!-- Actividades -->
             <div class="tab-pane fade" id="actividades" role="tabpanel">
                 <h3 class="mt-3">Actividades</h3>
-                <!-- Formulario para modificar actividad -->
+                <!-- Formulario para agregar/modificar actividad -->
                 <form id="form-actividad">
                     <div class="form-group">
-                        <label for="actividad-id">ID de Actividad</label>
-                        <select class="form-control" id="actividad-id" required></select>
+                        <label for="actividad-id">ID de Actividad (para modificar)</label>
+                        <select class="form-control" id="actividad-id"></select>
                     </div>
                     <div class="form-group">
                         <label for="actividad-descripcion">Descripción</label>
@@ -164,13 +164,13 @@
                     </div>
                     <div class="form-group">
                         <label for="actividad-costo">Costo</label>
-                        <input type="number" class="form-control" id="actividad-costo" required>
+                        <input type="number" step="0.01" class="form-control" id="actividad-costo" required>
                     </div>
                     <div class="form-group">
                         <label for="actividad-restriccion">Restricción de Edad</label>
                         <input type="number" class="form-control" id="actividad-restriccion" required>
                     </div>
-                    <button type="submit" class="btn btn-primary">Modificar Actividad</button>
+                    <button type="submit" class="btn btn-primary">Guardar Actividad</button>
                 </form>
                 <!-- Tabla de actividades -->
                 <table class="table mt-4" id="tabla-actividades">
@@ -180,6 +180,7 @@
                             <th>Descripción</th>
                             <th>Costo</th>
                             <th>Restricción de Edad</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -196,18 +197,18 @@
                         <select class="form-control" id="clase-instructor" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="clase-actividad">ID Actividad</label>
+                        <label for="clase-actividad">Actividad</label>
                         <select class="form-control" id="clase-actividad" required></select>
                     </div>
                     <div class="form-group">
-                        <label for="clase-turno">ID Turno</label>
+                        <label for="clase-turno">Turno</label>
                         <select class="form-control" id="clase-turno" required></select>
                     </div>
                     <div class="form-group">
                         <label for="clase-tipo">Tipo de Clase</label>
                         <select class="form-control" id="clase-tipo" required>
-                            <option value="Grupal">Grupal</option>
-                            <option value="Individual">Individual</option>
+                            <option value="grupal">Grupal</option>
+                            <option value="individual">Individual</option>
                         </select>
                     </div>
                     <button type="submit" class="btn btn-primary">Agregar Clase</button>
@@ -240,7 +241,7 @@
                     </div>
                     <div class="form-group">
                         <label for="ac-equipamiento">ID Equipamiento (Opcional)</label>
-                        <input type="number" class="form-control" id="ac-equipamiento">
+                        <select class="form-control" id="ac-equipamiento"></select>
                     </div>
                     <div class="form-group">
                         <label for="ac-equip-propio">Usa Equipamiento Propio</label>
@@ -272,17 +273,142 @@
 
     <!-- Modal para editar instructores -->
     <div class="modal fade" id="modal-editar-instructor" tabindex="-1" role="dialog">
-      <!-- Contenido del modal -->
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-instructor">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Instructor</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-instructor-ci">
+              <div class="form-group">
+                <label for="editar-instructor-nombre">Nombre</label>
+                <input type="text" class="form-control" id="editar-instructor-nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-instructor-apellido">Apellido</label>
+                <input type="text" class="form-control" id="editar-instructor-apellido" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Modal para editar alumnos -->
     <div class="modal fade" id="modal-editar-alumno" tabindex="-1" role="dialog">
-      <!-- Contenido del modal -->
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-alumno">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Alumno</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-alumno-ci">
+              <div class="form-group">
+                <label for="editar-alumno-nombre">Nombre</label>
+                <input type="text" class="form-control" id="editar-alumno-nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-apellido">Apellido</label>
+                <input type="text" class="form-control" id="editar-alumno-apellido" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-fecha-nacimiento">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="editar-alumno-fecha-nacimiento" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-telefono">Teléfono de Contacto</label>
+                <input type="text" class="form-control" id="editar-alumno-telefono">
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-correo">Correo Electrónico</label>
+                <input type="email" class="form-control" id="editar-alumno-correo">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Modal para editar turnos -->
     <div class="modal fade" id="modal-editar-turno" tabindex="-1" role="dialog">
-      <!-- Contenido del modal -->
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-turno">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Turno</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-turno-id">
+              <div class="form-group">
+                <label for="editar-turno-hora-inicio">Hora de Inicio</label>
+                <input type="time" class="form-control" id="editar-turno-hora-inicio" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-turno-hora-fin">Hora de Fin</label>
+                <input type="time" class="form-control" id="editar-turno-hora-fin" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para editar actividades -->
+    <div class="modal fade" id="modal-editar-actividad" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-actividad"> 
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Actividad</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-actividad-id">
+              <div class="form-group">
+                <label for="editar-actividad-descripcion">Descripción</label>
+                <input type="text" class="form-control" id="editar-actividad-descripcion" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-actividad-costo">Costo</label>
+                <input type="number" step="0.01" class="form-control" id="editar-actividad-costo" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-actividad-restriccion">Restricción de Edad</label>
+                <input type="number" class="form-control" id="editar-actividad-restriccion" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Scripts -->
