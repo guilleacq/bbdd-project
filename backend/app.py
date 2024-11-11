@@ -13,7 +13,7 @@ def get_db_connection():
     conexion = pymysql.connect(**db_config)
     return conexion
 
-# =============== RUTAS para el ABM de instructores, alumnos, actividades, clases y turnos =======================
+# =============== RUTAS para el ABM de instructores, alumnos, actividades, clases, equipamientos y turnos =======================
 
 # ========== INSTRUCTORES ===========
 # CRUD completo para instructores
@@ -64,6 +64,12 @@ def modificar_instructor(ci):
 def eliminar_instructor(ci):
     conexion = get_db_connection()
     cursor = conexion.cursor()
+    # Verificar si el instructor tiene clases asignadas
+    cursor.execute('SELECT COUNT(*) AS count FROM clase WHERE ci_instructor = %s', (ci,))
+    count_result = cursor.fetchone()
+    if count_result['count'] > 0:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar un instructor que tiene clases asignadas'}), 400
     cursor.execute('DELETE FROM instructores WHERE ci = %s', (ci,))
     conexion.commit()
     conexion.close()
@@ -123,6 +129,12 @@ def modificar_turno(id):
 def eliminar_turno(id):
     conexion = get_db_connection()
     cursor = conexion.cursor()
+    # Verificar si hay clases asociadas a este turno
+    cursor.execute('SELECT COUNT(*) AS count FROM clase WHERE id_turno = %s', (id,))
+    count_result = cursor.fetchone()
+    if count_result['count'] > 0:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar un turno que tiene clases asociadas'}), 400
     cursor.execute('DELETE FROM turnos WHERE id = %s', (id,))
     conexion.commit()
     conexion.close()
@@ -183,13 +195,35 @@ def modificar_alumno(ci):
 def eliminar_alumno(ci):
     conexion = get_db_connection()
     cursor = conexion.cursor()
+    # Verificar si el alumno está inscrito en alguna clase
+    cursor.execute('SELECT COUNT(*) AS count FROM alumno_clase WHERE ci_alumno = %s', (ci,))
+    count_result = cursor.fetchone()
+    if count_result['count'] > 0:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar un alumno que está inscrito en clases'}), 400
     cursor.execute('DELETE FROM alumnos WHERE ci = %s', (ci,))
     conexion.commit()
     conexion.close()
     return jsonify({'mensaje': 'Alumno eliminado correctamente'})
 
+# Ruta para obtener las clases de un alumno
+@app.route('/alumnos/<ci_alumno>/clases', methods=['GET'])
+def obtener_clases_de_alumno(ci_alumno):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    query = '''
+    SELECT c.id, c.ci_instructor, c.id_actividad, c.id_turno, c.dictada, c.tipo_clase
+    FROM alumno_clase ac
+    JOIN clase c ON ac.id_clase = c.id
+    WHERE ac.ci_alumno = %s
+    '''
+    cursor.execute(query, (ci_alumno,))
+    clases = cursor.fetchall()
+    conexion.close()
+    return jsonify(clases)
+
 # ========== ACTIVIDADES ===========
-# Rutas para modificación de actividades
+# CRUD completo para actividades
 @app.route('/actividades', methods=['GET'])
 def obtener_actividades():
     conexion = get_db_connection()
@@ -198,6 +232,28 @@ def obtener_actividades():
     actividades = cursor.fetchall()
     conexion.close()
     return jsonify(actividades)
+
+@app.route('/actividades', methods=['POST'])
+def agregar_actividad():
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    datos = request.json
+    descripcion = datos['descripcion']
+    costo = datos['costo']
+    restriccion_edad = datos['restriccion_edad']
+    cursor.execute('INSERT INTO actividades (descripcion, costo, restriccion_edad) VALUES (%s, %s, %s)', (descripcion, costo, restriccion_edad))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Actividad agregada correctamente'})
+
+@app.route('/actividades/<int:id>', methods=['GET'])
+def obtener_actividad(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('SELECT * FROM actividades WHERE id = %s', (id,))
+    actividad = cursor.fetchone()
+    conexion.close()
+    return jsonify(actividad)
 
 @app.route('/actividades/<int:id>', methods=['PUT'])
 def modificar_actividad(id):
@@ -211,6 +267,82 @@ def modificar_actividad(id):
     conexion.commit()
     conexion.close()
     return jsonify({'mensaje': 'Actividad modificada correctamente'})
+
+@app.route('/actividades/<int:id>', methods=['DELETE'])
+def eliminar_actividad(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    # Verificar si hay clases asociadas a esta actividad
+    cursor.execute('SELECT COUNT(*) AS count FROM clase WHERE id_actividad = %s', (id,))
+    count_result = cursor.fetchone()
+    if count_result['count'] > 0:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar una actividad que tiene clases asociadas'}), 400
+    cursor.execute('DELETE FROM actividades WHERE id = %s', (id,))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Actividad eliminada correctamente'})
+
+# ========== EQUIPAMIENTOS ===========
+# CRUD completo para equipamientos
+@app.route('/equipamientos', methods=['GET'])
+def obtener_equipamientos():
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('SELECT * FROM equipamiento')
+    equipamientos = cursor.fetchall()
+    conexion.close()
+    return jsonify(equipamientos)
+
+@app.route('/equipamientos', methods=['POST'])
+def agregar_equipamiento():
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    datos = request.json
+    id_actividad = datos['id_actividad']
+    descripcion = datos['descripcion']
+    costo = datos['costo']
+    cursor.execute('INSERT INTO equipamiento (id_actividad, descripcion, costo) VALUES (%s, %s, %s)', (id_actividad, descripcion, costo))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Equipamiento agregado correctamente'})
+
+@app.route('/equipamientos/<int:id>', methods=['GET'])
+def obtener_equipamiento(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('SELECT * FROM equipamiento WHERE id = %s', (id,))
+    equipamiento = cursor.fetchone()
+    conexion.close()
+    return jsonify(equipamiento)
+
+@app.route('/equipamientos/<int:id>', methods=['PUT'])
+def modificar_equipamiento(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    datos = request.json
+    id_actividad = datos['id_actividad']
+    descripcion = datos['descripcion']
+    costo = datos['costo']
+    cursor.execute('UPDATE equipamiento SET id_actividad = %s, descripcion = %s, costo = %s WHERE id = %s', (id_actividad, descripcion, costo, id))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Equipamiento modificado correctamente'})
+
+@app.route('/equipamientos/<int:id>', methods=['DELETE'])
+def eliminar_equipamiento(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    # Verificar si hay alumnos usando este equipamiento en alguna clase
+    cursor.execute('SELECT COUNT(*) AS count FROM alumno_clase WHERE id_equipamiento = %s', (id,))
+    count_result = cursor.fetchone()
+    if count_result['count'] > 0:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar un equipamiento que está siendo usado por alumnos'}), 400
+    cursor.execute('DELETE FROM equipamiento WHERE id = %s', (id,))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Equipamiento eliminado correctamente'})
 
 # ========== CLASES ===========
 # CRUD completo para clases, incluyendo restricciones y reportes
@@ -242,6 +374,15 @@ def agregar_clase():
     conexion.close()
     return jsonify({'mensaje': 'Clase agregada correctamente'})
 
+@app.route('/clases/<int:id>', methods=['GET'])
+def obtener_clase(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('SELECT * FROM clase WHERE id = %s', (id,))
+    clase = cursor.fetchone()
+    conexion.close()
+    return jsonify(clase)
+
 # Ruta para modificar una clase
 @app.route('/clases/<int:id>', methods=['PUT'])
 def modificar_clase(id):
@@ -258,7 +399,7 @@ def modificar_clase(id):
         return jsonify({'error': 'La clase ya fue dictada, no se puede modificar'}), 400
     # Verificar si el instructor ya tiene una clase en el mismo turno
     cursor.execute('SELECT * FROM clase WHERE ci_instructor = %s AND id_turno = %s AND id != %s', (ci_instructor, id_turno, id))
-    if cursor.fetchone():   
+    if cursor.fetchone():
         conexion.close()
         return jsonify({'error': 'El instructor ya tiene otra clase en ese turno'}), 400
     cursor.execute('UPDATE clase SET ci_instructor = %s, id_turno = %s WHERE id = %s', (ci_instructor, id_turno, id))
@@ -266,7 +407,49 @@ def modificar_clase(id):
     conexion.close()
     return jsonify({'mensaje': 'Clase modificada correctamente'})
 
-# Nueva ruta para agregar un alumno a una clase
+# Ruta para eliminar una clase
+@app.route('/clases/<int:id>', methods=['DELETE'])
+def eliminar_clase(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    # Verificar si la clase ya fue dictada
+    cursor.execute('SELECT dictada FROM clase WHERE id = %s', (id,))
+    clase = cursor.fetchone()
+    if clase and clase['dictada']:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar una clase que ya fue dictada'}), 400
+    cursor.execute('DELETE FROM clase WHERE id = %s', (id,))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Clase eliminada correctamente'})
+
+# Ruta para marcar una clase como dictada
+@app.route('/clases/<int:id>/dictar', methods=['POST'])
+def dictar_clase(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('UPDATE clase SET dictada = TRUE WHERE id = %s', (id,))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Clase marcada como dictada'})
+
+# Ruta para obtener los alumnos de una clase
+@app.route('/clases/<int:id>/alumnos', methods=['GET'])
+def obtener_alumnos_de_clase(id):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    query = '''
+    SELECT ac.ci_alumno, a.nombre, a.apellido, ac.id_equipamiento, ac.usa_equipamiento_prop
+    FROM alumno_clase ac
+    JOIN alumnos a ON ac.ci_alumno = a.ci
+    WHERE ac.id_clase = %s
+    '''
+    cursor.execute(query, (id,))
+    alumnos = cursor.fetchall()
+    conexion.close()
+    return jsonify(alumnos)
+
+# Ruta para agregar un alumno a una clase
 @app.route('/clases/<int:id_clase>/alumnos', methods=['POST'])
 def agregar_alumno_a_clase(id_clase):
     conexion = get_db_connection()
@@ -276,8 +459,8 @@ def agregar_alumno_a_clase(id_clase):
     id_equipamiento = datos.get('id_equipamiento')  # Puede ser None si usa equipamiento propio
     usa_equipamiento_prop = datos.get('usa_equipamiento_prop', False)
 
-    # Verificar si la clase ya fue dictada
-    cursor.execute('SELECT dictada, id_turno FROM clase WHERE id = %s', (id_clase,))
+    # Verificar si la clase existe y no ha sido dictada
+    cursor.execute('SELECT dictada, id_turno, id_actividad, tipo_clase FROM clase WHERE id = %s', (id_clase,))
     clase = cursor.fetchone()
     if not clase:
         conexion.close()
@@ -287,6 +470,8 @@ def agregar_alumno_a_clase(id_clase):
         return jsonify({'error': 'No se puede modificar una clase que ya fue dictada'}), 400
 
     id_turno_clase = clase['id_turno']
+    id_actividad_clase = clase['id_actividad']
+    tipo_clase = clase['tipo_clase']
 
     # Verificar si el alumno ya está inscrito en otra clase en el mismo turno
     query_alumno_turno = '''
@@ -300,6 +485,38 @@ def agregar_alumno_a_clase(id_clase):
         conexion.close()
         return jsonify({'error': 'El alumno ya está inscrito en otra clase en este turno'}), 400
 
+    # Verificar restricción de edad
+    # Obtener fecha de nacimiento del alumno
+    cursor.execute('SELECT fecha_nacimiento FROM alumnos WHERE ci = %s', (ci_alumno,))
+    alumno = cursor.fetchone()
+    if not alumno:
+        conexion.close()
+        return jsonify({'error': 'El alumno no existe'}), 404
+    fecha_nacimiento = alumno['fecha_nacimiento']
+    # Calcular edad
+    today = datetime.today().date()
+    edad = today.year - fecha_nacimiento.year - ((today.month, today.day) < (fecha_nacimiento.month, fecha_nacimiento.day))
+
+    # Obtener restricción de edad de la actividad
+    cursor.execute('SELECT restriccion_edad FROM actividades WHERE id = %s', (id_actividad_clase,))
+    actividad = cursor.fetchone()
+    if not actividad:
+        conexion.close()
+        return jsonify({'error': 'La actividad no existe'}), 404
+    restriccion_edad = actividad['restriccion_edad']
+
+    if edad < restriccion_edad:
+        conexion.close()
+        return jsonify({'error': f'El alumno no cumple con la restricción de edad para esta actividad (Edad mínima: {restriccion_edad})'}), 400
+
+    # Si la clase es individual, verificar que no haya más alumnos
+    if tipo_clase == 'individual':
+        cursor.execute('SELECT COUNT(*) AS count FROM alumno_clase WHERE id_clase = %s', (id_clase,))
+        count_result = cursor.fetchone()
+        if count_result['count'] >= 1:
+            conexion.close()
+            return jsonify({'error': 'No se puede agregar más alumnos a una clase individual'}), 400
+
     # Agregar el alumno a la clase
     cursor.execute('''
         INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento, usa_equipamiento_prop)
@@ -308,6 +525,22 @@ def agregar_alumno_a_clase(id_clase):
     conexion.commit()
     conexion.close()
     return jsonify({'mensaje': 'Alumno agregado a la clase correctamente'})
+
+# Ruta para eliminar un alumno de una clase
+@app.route('/clases/<int:id_clase>/alumnos/<ci_alumno>', methods=['DELETE'])
+def eliminar_alumno_de_clase(id_clase, ci_alumno):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    # Verificar si la clase ya fue dictada
+    cursor.execute('SELECT dictada FROM clase WHERE id = %s', (id_clase,))
+    clase = cursor.fetchone()
+    if clase and clase['dictada']:
+        conexion.close()
+        return jsonify({'error': 'No se puede eliminar un alumno de una clase que ya fue dictada'}), 400
+    cursor.execute('DELETE FROM alumno_clase WHERE id_clase = %s AND ci_alumno = %s', (id_clase, ci_alumno))
+    conexion.commit()
+    conexion.close()
+    return jsonify({'mensaje': 'Alumno eliminado de la clase correctamente'})
 
 # ========== REPORTES ===========
 # Reporte: Actividades que más ingresos generan, incluyendo costo de equipamiento
