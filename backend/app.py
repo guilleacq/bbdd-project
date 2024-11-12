@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import pymysql
 from config import db_config
-from datetime import datetime
+from datetime import datetime, time
 
 app = Flask(__name__)
 CORS(app)  # Habilitar CORS para permitir peticiones desde cualquier origen
@@ -355,6 +355,25 @@ def obtener_clases():
     conexion.close()
     return jsonify(clases)
 
+    # Función para verificar si una clase está en curso
+def clase_en_curso(id_clase):
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    cursor.execute('''
+        SELECT t.hora_inicio, t.hora_fin
+        FROM clase c
+        JOIN turnos t ON c.id_turno = t.id
+        WHERE c.id = %s
+    ''', (id_clase,))
+    clase = cursor.fetchone()
+    conexion.close()
+    if clase:
+        hora_actual = datetime.now().time()
+        hora_inicio = datetime.strptime(str(clase['hora_inicio']), '%H:%M:%S').time()
+        hora_fin = datetime.strptime(str(clase['hora_fin']), '%H:%M:%S').time()
+        return hora_inicio <= hora_actual <= hora_fin
+    return False
+
 @app.route('/clases', methods=['POST'])
 def agregar_clase():
     conexion = get_db_connection()
@@ -386,6 +405,9 @@ def obtener_clase(id):
 # Ruta para modificar una clase
 @app.route('/clases/<int:id>', methods=['PUT'])
 def modificar_clase(id):
+    if clase_en_curso(id):
+        return jsonify({'error': 'No se puede modificar una clase en curso'}), 400
+
     conexion = get_db_connection()
     cursor = conexion.cursor()
     datos = request.json
@@ -410,6 +432,9 @@ def modificar_clase(id):
 # Ruta para eliminar una clase
 @app.route('/clases/<int:id>', methods=['DELETE'])
 def eliminar_clase(id):
+    if clase_en_curso(id):
+        return jsonify({'error': 'No se puede eliminar una clase en curso'}), 400
+
     conexion = get_db_connection()
     cursor = conexion.cursor()
     # Verificar si la clase ya fue dictada
@@ -549,13 +574,14 @@ def actividades_mas_ingresos():
     conexion = get_db_connection()
     cursor = conexion.cursor()
     query = '''
-    SELECT a.descripcion, SUM(a.costo + IFNULL(e.costo, 0)) AS ingresos_totales
-    FROM clase c
-    JOIN actividades a ON c.id_actividad = a.id
-    LEFT JOIN alumno_clase ac ON c.id = ac.id_clase
+    SELECT a.descripcion AS actividad, 
+        SUM(a.costo + IFNULL(e.costo, 0)) AS ingresos_totales
+    FROM actividades a
+    JOIN clase c ON c.id_actividad = a.id
+    JOIN alumno_clase ac ON c.id = ac.id_clase
     LEFT JOIN equipamiento e ON ac.id_equipamiento = e.id
     GROUP BY a.descripcion
-    ORDER BY ingresos_totales DESC
+    ORDER BY ingresos_totales DESC;
     '''
     cursor.execute(query)
     resultados = cursor.fetchall()
@@ -586,16 +612,33 @@ def turnos_mas_clases():
     conexion = get_db_connection()
     cursor = conexion.cursor()
     query = '''
-    SELECT CONCAT(t.hora_inicio, ' - ', t.hora_fin) AS turno, COUNT(c.id) AS cantidad_clases
+    SELECT CONCAT(t.hora_inicio, ' - ', t.hora_fin) AS turno, 
+        COUNT(c.id) AS cantidad_clases
     FROM clase c
     JOIN turnos t ON c.id_turno = t.id
     GROUP BY turno
-    ORDER BY cantidad_clases DESC
-    '''
+    ORDER BY cantidad_clases DESC;
+    ''' # Aca sacamos el 'WHERE c.dictada = TRUE'
     cursor.execute(query)
     resultados = cursor.fetchall()
     conexion.close()
     return jsonify(resultados)
+
+# ========== LOGIN ===========
+@app.route('/login', methods=['POST'])
+def login():
+    conexion = get_db_connection()
+    cursor = conexion.cursor()
+    datos = request.json
+    correo = datos['correo']
+    contraseña = datos['contraseña']
+    cursor.execute('SELECT * FROM login WHERE correo = %s AND contraseña = %s', (correo, contraseña))
+    usuario = cursor.fetchone()
+    conexion.close()
+    if usuario:
+        return jsonify({'exito': True})
+    return jsonify({'error': 'Usuario o contraseña incorrectos'}), 401
+
 
 if __name__ == '__main__':
     app.run(debug=True)
