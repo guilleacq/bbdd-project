@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Escuela de Deportes de Nieve</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Escuela de Deportes de Nieve</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Tabs de navegación -->
+        <ul class="nav nav-tabs" id="mainTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="instructores-tab" data-toggle="tab" href="#instructores" role="tab">Instructores</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="alumnos-tab" data-toggle="tab" href="#alumnos" role="tab">Alumnos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="turnos-tab" data-toggle="tab" href="#turnos" role="tab">Turnos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="actividades-tab" data-toggle="tab" href="#actividades" role="tab">Actividades</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="clases-tab" data-toggle="tab" href="#clases" role="tab">Clases</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="reportes-tab" data-toggle="tab" href="#reportes" role="tab">Reportes</a>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="mainTabContent">
+            <!-- Instructores -->
+            <div class="tab-pane fade show active" id="instructores" role="tabpanel">
+                <h3 class="mt-3">Instructores</h3>
+                <!-- Formulario para agregar instructor -->
+                <form id="form-instructor">
+                    <div class="form-group">
+                        <label for="instructor-ci">Cédula</label>
+                        <input type="text" class="form-control" id="instructor-ci" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="instructor-nombre">Nombre</label>
+                        <input type="text" class="form-control" id="instructor-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="instructor-apellido">Apellido</label>
+                        <input type="text" class="form-control" id="instructor-apellido" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Instructor</button>
+                </form>
+                <!-- Tabla de instructores -->
+                <table class="table mt-4" id="tabla-instructores">
+                    <thead>
+                        <tr>
+                            <th>CI</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Alumnos -->
+            <div class="tab-pane fade" id="alumnos" role="tabpanel">
+                <h3 class="mt-3">Alumnos</h3>
+                <!-- Formulario para agregar alumno -->
+                <form id="form-alumno">
+                    <div class="form-group">
+                        <label for="alumno-ci">Cédula</label>
+                        <input type="text" class="form-control" id="alumno-ci" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alumno-nombre">Nombre</label>
+                        <input type="text" class="form-control" id="alumno-nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alumno-apellido">Apellido</label>
+                        <input type="text" class="form-control" id="alumno-apellido" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alumno-fecha-nacimiento">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="alumno-fecha-nacimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="alumno-telefono">Teléfono de Contacto</label>
+                        <input type="text" class="form-control" id="alumno-telefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="alumno-correo">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="alumno-correo">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Alumno</button>
+                </form>
+                <!-- Tabla de alumnos -->
+                <table class="table mt-4" id="tabla-alumnos">
+                    <thead>
+                        <tr>
+                            <th>CI</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Fecha Nacimiento</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Turnos -->
+            <div class="tab-pane fade" id="turnos" role="tabpanel">
+                <h3 class="mt-3">Turnos</h3>
+                <!-- Formulario para agregar turno -->
+                <form id="form-turno">
+                    <div class="form-group">
+                        <label for="turno-hora-inicio">Hora de Inicio</label>
+                        <input type="time" class="form-control" id="turno-hora-inicio" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="turno-hora-fin">Hora de Fin</label>
+                        <input type="time" class="form-control" id="turno-hora-fin" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Turno</button>
+                </form>
+                <!-- Tabla de turnos -->
+                <table class="table mt-4" id="tabla-turnos">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Actividades -->
+            <div class="tab-pane fade" id="actividades" role="tabpanel">
+                <h3 class="mt-3">Actividades</h3>
+                <!-- Formulario para agregar/modificar actividad -->
+                <form id="form-actividad">
+                    <div class="form-group">
+                        <label for="actividad-id">ID de Actividad (para modificar)</label>
+                        <select class="form-control" id="actividad-id"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad-descripcion">Descripción</label>
+                        <input type="text" class="form-control" id="actividad-descripcion" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad-costo">Costo</label>
+                        <input type="number" step="0.01" class="form-control" id="actividad-costo" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="actividad-restriccion">Restricción de Edad</label>
+                        <input type="number" class="form-control" id="actividad-restriccion" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Actividad</button>
+                </form>
+                <!-- Tabla de actividades -->
+                <table class="table mt-4" id="tabla-actividades">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Descripción</th>
+                            <th>Costo</th>
+                            <th>Restricción de Edad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <!-- Clases -->
+            <div class="tab-pane fade" id="clases" role="tabpanel">
+                <h3 class="mt-3">Clases</h3>
+                <!-- Formulario para agregar clase -->
+                <form id="form-clase">
+                    <div class="form-group">
+                        <label for="clase-instructor">CI Instructor</label>
+                        <select class="form-control" id="clase-instructor" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clase-actividad">Actividad</label>
+                        <select class="form-control" id="clase-actividad" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clase-turno">Turno</label>
+                        <select class="form-control" id="clase-turno" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="clase-tipo">Tipo de Clase</label>
+                        <select class="form-control" id="clase-tipo" required>
+                            <option value="grupal">Grupal</option>
+                            <option value="individual">Individual</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Clase</button>
+                </form>
+                <!-- Tabla de clases -->
+                <table class="table mt-4" id="tabla-clases">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Instructor</th>
+                            <th>Actividad</th>
+                            <th>Turno</th>
+                            <th>Tipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+
+                <!-- Formulario para agregar alumno a clase -->
+                <h4 class="mt-5">Agregar Alumno a Clase</h4>
+                <form id="form-alumno-clase">
+                    <div class="form-group">
+                        <label for="ac-clase-id">ID Clase</label>
+                        <select class="form-control" id="ac-clase-id" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ac-alumno-ci">CI Alumno</label>
+                        <select class="form-control" id="ac-alumno-ci" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ac-equipamiento">ID Equipamiento (Opcional)</label>
+                        <select class="form-control" id="ac-equipamiento"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ac-equip-propio">Usa Equipamiento Propio</label>
+                        <select class="form-control" id="ac-equip-propio" required>
+                            <option value="false">No</option>
+                            <option value="true">Sí</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Alumno a Clase</button>
+                </form>
+            </div>
+
+            <!-- Reportes -->
+            <div class="tab-pane fade" id="reportes" role="tabpanel">
+                <h3 class="mt-3">Reportes</h3>
+                <button class="btn btn-secondary mb-3" id="btn-reporte-ingresos">Actividades con más Ingresos</button>
+                <button class="btn btn-secondary mb-3" id="btn-reporte-alumnos">Actividades con más Alumnos</button>
+                <button class="btn btn-secondary mb-3" id="btn-reporte-turnos">Turnos con más Clases</button>
+                <!-- Tabla de reportes -->
+                <table class="table mt-4" id="tabla-reportes">
+                    <thead>
+                        <tr id="reporte-header"></tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para editar instructores -->
+    <div class="modal fade" id="modal-editar-instructor" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-instructor">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Instructor</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-instructor-ci">
+              <div class="form-group">
+                <label for="editar-instructor-nombre">Nombre</label>
+                <input type="text" class="form-control" id="editar-instructor-nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-instructor-apellido">Apellido</label>
+                <input type="text" class="form-control" id="editar-instructor-apellido" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para editar alumnos -->
+    <div class="modal fade" id="modal-editar-alumno" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-alumno">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Alumno</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-alumno-ci">
+              <div class="form-group">
+                <label for="editar-alumno-nombre">Nombre</label>
+                <input type="text" class="form-control" id="editar-alumno-nombre" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-apellido">Apellido</label>
+                <input type="text" class="form-control" id="editar-alumno-apellido" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-fecha-nacimiento">Fecha de Nacimiento</label>
+                <input type="date" class="form-control" id="editar-alumno-fecha-nacimiento" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-telefono">Teléfono de Contacto</label>
+                <input type="text" class="form-control" id="editar-alumno-telefono">
+              </div>
+              <div class="form-group">
+                <label for="editar-alumno-correo">Correo Electrónico</label>
+                <input type="email" class="form-control" id="editar-alumno-correo">
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para editar turnos -->
+    <div class="modal fade" id="modal-editar-turno" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-turno">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Turno</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-turno-id">
+              <div class="form-group">
+                <label for="editar-turno-hora-inicio">Hora de Inicio</label>
+                <input type="time" class="form-control" id="editar-turno-hora-inicio" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-turno-hora-fin">Hora de Fin</label>
+                <input type="time" class="form-control" id="editar-turno-hora-fin" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal para editar actividades -->
+    <div class="modal fade" id="modal-editar-actividad" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="form-editar-actividad"> 
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Editar Actividad</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="editar-actividad-id">
+              <div class="form-group">
+                <label for="editar-actividad-descripcion">Descripción</label>
+                <input type="text" class="form-control" id="editar-actividad-descripcion" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-actividad-costo">Costo</label>
+                <input type="number" step="0.01" class="form-control" id="editar-actividad-costo" required>
+              </div>
+              <div class="form-group">
+                <label for="editar-actividad-restriccion">Restricción de Edad</label>
+                <input type="number" class="form-control" id="editar-actividad-restriccion" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

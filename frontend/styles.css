@@ -1,0 +1,16 @@
+/* Estilos personalizados */
+body {
+    padding-bottom: 50px;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+.modal-footer {
+    background-color: #f8f9fa;
+}
