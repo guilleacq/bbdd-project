@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:latest
+    container_name: mysql-obligatorio
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: obligatorio
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+    networks:
+      - obligatorio_net
+
+  backend:
+    build:
+      context: ./backend
+    container_name: obligatorio_backend
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_USER: root
+      DB_PASSWORD: 1234
+      DB_NAME: obligatorio
+    ports:
+      - "5000:5000"
+    networks:
+      - obligatorio_net
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: obligatorio_frontend
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - obligatorio_net
+
+networks:
+  obligatorio_net:
+
+volumes:
+  db_data:
