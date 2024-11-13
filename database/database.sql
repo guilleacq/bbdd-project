@@ -1,5 +1,6 @@
-# CREATE DATABASE obligatorio;
 USE obligatorio;
+
+SELECT 'El script database.sql está siendo ejecutado';
 
 CREATE TABLE login (
     correo VARCHAR(255) NOT NULL PRIMARY KEY,

@@ -631,8 +631,8 @@ def login():
     cursor = conexion.cursor()
     datos = request.json
     correo = datos['correo']
-    contraseña = datos['contraseña']
-    cursor.execute('SELECT * FROM login WHERE correo = %s AND contraseña = %s', (correo, contraseña))
+    contrasena = datos['contrasena']
+    cursor.execute('SELECT * FROM login WHERE correo = %s AND contrasena = %s', (correo, contrasena))
     usuario = cursor.fetchone()
     conexion.close()
     if usuario:
