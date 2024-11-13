@@ -1,4 +1,4 @@
-CREATE DATABASE obligatorio;
+# CREATE DATABASE obligatorio;
 USE obligatorio;
 
 CREATE TABLE login (
@@ -98,17 +98,31 @@ INSERT INTO alumnos (ci, nombre, apellido, fecha_nacimiento, telefono_contacto, 
 ('34567890', 'Jorge', 'López', '2000-09-30', '098765432', 'jorge@gmail.com'),
 ('45678901', 'Lucía', 'Fernández', '1998-07-22', '097654321', 'lucia@gmail.com');
 
+INSERT INTO login(correo, contraseña) VALUES
+('admin@gmail.com', 'admin');
+
+INSERT INTO clase (ci_instructor, id_actividad, id_turno, dictada, tipo_clase) VALUES
+('12345678', 1, 1, FALSE, 'grupal'),
+('87654321', 2, 2, FALSE, 'grupal'),
+('11223344', 3, 3, FALSE, 'individual');
+
+INSERT INTO alumno_clase (id_clase, ci_alumno, id_equipamiento, usa_equipamiento_prop) VALUES
+(1, '23456789', 1, FALSE),
+(1, '34567890', 2, TRUE),
+(2, '45678901', 3, FALSE),
+(3, '23456789', 5, FALSE);
+
 # Restricciones
 
 #Esto hace que no un instructor no pueda dar dos clases en el mismo turno
 ALTER TABLE clase
 ADD CONSTRAINT unique_instructor_turno UNIQUE (ci_instructor, id_turno);
 
+
 # RECORDAR RESTRINGIR EN EL BACK y EL FRONT:
 # - que el instructor no pueda dar dos clases en el mismo turno (YA ESTA CHECKEADO ACA)
 # - Que un alumno no pueda estar en dos clases en el mismo turno
 # - Que no se puedan hacer modificaciones de horario si se esta en clase
-
 
 
 
