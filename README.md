@@ -65,8 +65,3 @@ obligatorio_frontend nginx -g daemon off;          Up      0.0.0.0:80->80/tcp
 <p>Este comando detiene los contenedores y libera los recursos asociados.</p>
 </li>
 </ul>
-
-<li>Reiniciás los contenedores:
-    <code>docker-compose up</code>
-</li>
-</ol>
