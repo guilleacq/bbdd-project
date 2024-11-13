@@ -1,10 +1,8 @@
 USE obligatorio;
 
-SELECT 'El script database.sql está siendo ejecutado';
-
 CREATE TABLE login (
     correo VARCHAR(255) NOT NULL PRIMARY KEY,
-    contraseña VARCHAR(255) NOT NULL
+    contrasena VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE actividades (
@@ -95,11 +93,11 @@ INSERT INTO instructores (ci, nombre, apellido) VALUES
 ('11223344', 'Guillermo', 'Aquiestapase');
 
 INSERT INTO alumnos (ci, nombre, apellido, fecha_nacimiento, telefono_contacto, correo_electronico) VALUES
-('23456789', 'Ana', 'Martínez', '2005-04-12', '099123456', 'ana@gmail.com'),
-('34567890', 'Jorge', 'López', '2000-09-30', '098765432', 'jorge@gmail.com'),
-('45678901', 'Lucía', 'Fernández', '1998-07-22', '097654321', 'lucia@gmail.com');
+('23456789', 'Ana', 'Martinez', '2005-04-12', '099123456', 'ana@gmail.com'),
+('34567890', 'Jorge', 'Lopez', '2000-09-30', '098765432', 'jorge@gmail.com'),
+('45678901', 'Lucia', 'Fernandez', '1998-07-22', '097654321', 'lucia@gmail.com');
 
-INSERT INTO login(correo, contraseña) VALUES
+INSERT INTO login(correo, contrasena) VALUES
 ('admin@gmail.com', 'admin');
 
 INSERT INTO clase (ci_instructor, id_actividad, id_turno, dictada, tipo_clase) VALUES
