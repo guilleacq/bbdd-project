@@ -1,67 +1,62 @@
+# ⚠️ Legacy/Academic Project Disclaimer
 
-<h1>Instrucciones para Ejecutar el Proyecto</h1>
+> **Historical Note:** This repository contains an academic project developed during my early university years. I keep it public solely as a historical record of my learning process and professional evolution. 
+ 
+> The monolithic design, lack of separation of concerns, and the coding practices applied in this repository **do not** reflect my current technical standards, architectural mindset, or seniority level. 
 
-<h2>Requisitos Previos</h2>
-<p>Antes de empezar, asegurate de tener instaladas estas herramientas:</p>
-<ul>
-<li>Docker</li>
-<li>Docker Compose</li>
-</ul>
+---
 
-<p><strong>Nota:</strong> Asegurate de que los puertos 80, 5000 y 3306 estén libres en tu máquina local, porque van a ser utilizados por la aplicación.</p>
+# Activity and Class Management System
 
-<h2>Pasos para Ejecutar la Aplicación</h2>
+## Project Purpose
+This project was developed for a Database university course. The main objective of the application is to manage the operations of a sports center, including the management of instructors, students, classes, and activities. Additionally, the system includes features to enrich the application, such as reports showing the most profitable activities or the shifts with the highest number of classes.
 
-<h3>1. Clonar el Repositorio</h3>
-<p>Abrí una terminal y ejecutá el siguiente comando para clonar el repositorio:</p>
-<code>git clone https://github.com/guilleacq/bbdd-project.git</code>
+Although this was a group project, I was solely responsible for designing the technological architecture, developing all the source code (frontend and backend), building the database and fully containerizing the environments.
 
-<h3>2. Navegar al Directorio del Proyecto</h3>
-<p>Ingresá al directorio del proyecto clonado:</p>
-<code>cd bbdd-project</code>
+## Architecture and Technical Decisions
+We made several key decisions to get the application up and running:
 
-<h3>3. Construir y Ejecutar los Contenedores con Docker Compose</h3>
-<p>Ejecutá el siguiente comando para construir las imágenes y levantar los contenedores:</p>
-<code>docker-compose up --build</code>
-<p>NOTA: Este proceso puede tomar unos minutos la primera vez, ya que Docker va a descargar las imágenes base y construir las imágenes de tu aplicación.</p>
+* **Containerization with Docker:** We used Docker to make the application easy to run and replicate on any machine. Docker allowed us to isolate components and manage them effectively, avoiding environment configuration issues.
+* **MySQL Database:** We chose MySQL because of its robustness and community support. We implemented constraints and foreign keys to maintain data integrity (e.g., ensuring an instructor cannot teach two classes in the same shift). We also handled special characters (like "ñ" and accents) by setting the encoding to UTF-8 to prevent errors in the SQL scripts.
+* **RESTful Backend with Flask:** We used Flask to build our RESTful API because it is a lightweight and flexible framework. We integrated the database using the `pymysql` library.
 
-<h3>4. Verificar que los Contenedores Estén Corriendo</h3>
-<p>Cuando los contenedores estén levantados, vas a poder verificar su estado así:</p>
-<code>docker-compose ps</code>
+## 🧠 Critical Analysis and "Technical Debt" (What I would improve today)
+Since this was an academic project with strict deadlines, the main goal was to deliver a functional product. However, reviewing the current code (specifically the `app.py` file), there are clear architectural improvements I would implement today:
 
-<p>Tendrías que ver algo parecido a lo siguiente:</p>
-<pre>
-Name                    Command               State           Ports
------------------------------------------------------------------------------------
-mysql-obligatorio   docker-entrypoint.sh mysqld    Up      0.0.0.0:3306->3306/tcp
-obligatorio_backend flask run --host=0.0.0.0       Up      0.0.0.0:5000->5000/tcp
-obligatorio_frontend nginx -g daemon off;          Up      0.0.0.0:80->80/tcp
-</pre>
+1. **N-Tier Architecture:** Currently, the `app.py` file is a monolith mixing routing (HTTP endpoints), business logic, and SQL queries. Today, I would refactor this into Controllers, Services, and Repositories.
+2. **Database Connection Pooling:** The current code opens and closes a connection on every single endpoint hit. For a production system, I would implement Connection Pooling to reuse active connections, reducing latency and resource consumption.
+3. **Data Validation (DTOs):** Instead of accessing `request.json` directly, I would implement validation schemas to guarantee the incoming payload has the correct structure.
+4. **Security:** The current `/login` endpoint stores and compares plain-text passwords. This is SERIOUS PROBLEM for security. In a real environment, I would hash the password using bcrypt, and authentication should rely on JWTs (JSON Web Tokens) or sessions.
 
-<h3>5. Acceder a la Aplicación</h3>
+## Instructions to Run the Project
 
-<h4>Frontend</h4>
-<p>Abrí tu navegador y entrá a:</p>
-<p><a href="http://localhost">http://localhost</a></p>
-<p>Acá vas a poder interactuar con la interfaz de usuario de la aplicación.</p>
+### Prerequisites
+* Docker
+* Docker Compose
 
-<h4>Backend</h4>
-<p>Si querés acceder directamente al backend (por ejemplo, para probar las APIs), entrá a:</p>
-<p><a href="http://localhost:5000">http://localhost:5000</a></p>
+*Note: Ensure ports 80, 5000, and 3306 are free on your local machine.*
 
-<h4>Base de Datos</h4>
-<p>La base de datos MySQL está disponible en el puerto 3306. Podés conectarte utilizando un cliente MySQL (como MySQL Workbench o DataGrip) con las siguientes credenciales:</p>
-<ul>
-<li>Host: localhost</li>
-<li>Puerto: 3306</li>
-<li>Usuario: root</li>
-<li>Contraseña: 1234</li>
-<li>Base de datos: obligatorio</li>
-</ul>
+### Steps to Run
 
-<h3>6. Detener y Eliminar los Contenedores</h3>
-<p>Cuando hayas terminado de usar la aplicación, podés detener y eliminar los contenedores ejecutando:</p>
-<code>docker-compose down</code>
-<p>Este comando detiene los contenedores y libera los recursos asociados.</p>
-</li>
-</ul>
+1. **Clone the repository:**
+`git clone [https://github.com/guilleacq/bbdd-project.git](https://github.com/guilleacq/bbdd-project.git)`
+
+3. **Navigate to the directory:**
+
+`cd bbdd-project`
+
+
+3. **Build and run the containers:**
+`docker-compose up --build`
+
+
+
+4. **Access the application:**
+* **Frontend:** http://localhost
+* **Backend API:** http://localhost:5000
+* **Database:** localhost:3306 (User: root, Pass: 1234, DB: obligatorio)
+
+
+
+To stop the containers, run `docker-compose down`.
+
